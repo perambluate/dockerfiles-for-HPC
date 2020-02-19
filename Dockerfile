@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 MAINTAINER perambluate 
 
 # arguments
-ARG HOME=/home/t2
+#ARG HOME=/home/t2
 ARG MPIDIR=/opt
 ARG APPDIR=/root
 ARG DEBIAN_FRONTEND=noninteractive
@@ -11,22 +11,34 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update -y && \
 	apt install -y --reinstall systemd iptables && \
 	apt install -y \
-		gcc \
-		g++ \
-		make \
-		wget \
-		git \
-		python3 \
-		libatlas3-base \
-		vim \
-		locate \
-		ssh \
-		net-tools \
-		iputils-ping \
-		iproute2 \
-		curl \
-		environment-modules \
-		snap
+	gcc \
+	g++ \
+	make \
+	wget \
+	git \
+	python3 \
+	libatlas3-base \
+	vim \
+	locate \
+	ssh \
+	net-tools \
+	iputils-ping \
+	iproute2 \
+	curl \
+	environment-modules \
+	cmake \
+	libnss3 \
+	libgtk2.*common \
+	libpango-1* \
+	libasound2* \
+	xserver-xorg \
+	cpio \
+	libgtk-3-dev \
+	libssl-dev \
+	linux-headers-$(uname -r) \
+	bash-completion \
+	tcl \
+	tmux
 
 #openmpi	
 #WORKDIR ${HOME}
@@ -69,8 +81,7 @@ RUN cd ${APPDIR} && \
 	rm hpcc-1.5.0.tar.gz
 
 # elmer/ice
-RUN snap cmake --classic && \
-	cd ${APPDIR} && \
+RUN cd ${APPDIR} && \
 	git clone https://github.com/ElmerCSC/elmerfem.git
 
 # changa
@@ -78,3 +89,8 @@ RUN cd ${APPDIR} && \
 	git clone http://charm.cs.illinois.edu/gerrit/cosmo/changa.git && \
 	git clone http://charm.cs.illinois.edu/gerrit/cosmo/utility.git && \
 	git clone http://charm.cs.uiuc.edu/gerrit/charm.git
+
+# module file
+COPY ./modulefiles ${APPDIR}/modulefiles
+RUN source /etc/profile.d/modules.sh && \
+	module use ${APPDIR}/modulefiles
