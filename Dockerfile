@@ -83,8 +83,7 @@ RUN cd ${APPDIR} && \
 RUN cd ${APPDIR} && \
 	wget http://www.hpcg-benchmark.org/downloads/hpcg-3.1.tar.gz && \
 	tar -zxvf hpcg-3.1.tar.gz && \
-	rm hpcg-3.1.tar.gz && \
-	mkdir hpcg-3.1/build
+	rm hpcg-3.1.tar.gz
 
 # hpcc-1.5.0
 RUN cd ${APPDIR} && \
