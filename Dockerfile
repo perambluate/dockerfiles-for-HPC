@@ -7,6 +7,9 @@ ARG MPIDIR=/opt
 ARG APPDIR=/root
 ARG DEBIAN_FRONTEND=noninteractive
 
+# use bash as shell
+SHELL ["/bin/bash", "-c"]
+
 # apt
 RUN apt update -y && \
 	apt install -y --reinstall systemd iptables && \
@@ -38,7 +41,16 @@ RUN apt update -y && \
 	linux-headers-$(uname -r) \
 	bash-completion \
 	tcl \
-	tmux
+	gfortran \
+	autoconf \
+	automake \
+	libibverbs-dev \
+	numactl \
+	libnuma-dev 
+	#libxt-dev \
+    #libxaw7-dev \ 
+    #libncurses5-dev
+	#tmux
 
 #openmpi	
 #WORKDIR ${HOME}
@@ -84,11 +96,28 @@ RUN cd ${APPDIR} && \
 RUN cd ${APPDIR} && \
 	git clone https://github.com/ElmerCSC/elmerfem.git
 
+# ucx for changa
+RUN cd ${APPDIR} && \
+	git clone https://github.com/openucx/ucx.git && \
+	cd ucx && \
+	./autogen.sh && \
+	./contrib/configure-release --prefix=${APPDIR}\ucx && \
+	make -j$(nproc) && \
+	make install -j$(nproc)
+
 # changa
 RUN cd ${APPDIR} && \
-	git clone http://charm.cs.illinois.edu/gerrit/cosmo/changa.git && \
-	git clone http://charm.cs.illinois.edu/gerrit/cosmo/utility.git && \
-	git clone http://charm.cs.uiuc.edu/gerrit/charm.git
+	git clone https://github.com/UIUC-PPL/charm.git && \
+	git clone https://github.com/N-BodyShop/changa.git && \
+	git clone https://charm.cs.illinois.edu/gerrit/cosmo/utility.git
+
+# tipsy for changa
+#RUN cd ${APPDIR} && \
+#	git clone https://github.com/N-BodyShop/tipsy.git && \
+#	cd tipsy/code && \
+#	./configure && \
+#	make -j$(nproc) && \
+#	make install -j$(nproc)
 
 # module file
 COPY ./modulefiles ${APPDIR}/modulefiles
