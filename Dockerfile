@@ -14,39 +14,16 @@ SHELL ["/bin/bash", "-c"]
 RUN apt update -y && \
 	apt install -y --reinstall systemd iptables && \
 	apt install -y \
-	gcc \
-	g++ \
-	make \
-	wget \
-	git \
-	python3 \
-	libatlas3-base \
-	vim \
-	locate \
-	ssh \
-	net-tools \
-	iputils-ping \
-	iproute2 \
-	curl \
+	gcc g++ gfortran make cmake wget git ssh tcl python3 vim locate bash-completion\
+	net-tools iputils-ping iproute2 curl \
 	environment-modules \
-	cmake \
-	libnss3 \
-	libgtk2.*common \
-	libpango-1* \
-	libasound2* \
-	xserver-xorg \
-	cpio \
-	libgtk-3-dev \
-	libssl-dev \
-	linux-headers-$(uname -r) \
-	bash-completion \
-	tcl \
-	gfortran \
-	autoconf \
-	automake \
-	libibverbs-dev \
-	numactl \
-	libnuma-dev 
+	libnss3 libgtk2.*common libpango-1* libasound2* xserver-xorg cpio \
+	libgtk-3-dev libssl-dev linux-headers-$(uname -r) \
+	autoconf automake \
+	libibverbs-dev libatlas3-base \
+	numactl libnuma-dev \
+	tcl-dev tk-dev mesa-common-dev libjpeg-dev libtogl-dev 
+	
 	#libxt-dev \
     #libxaw7-dev \ 
     #libncurses5-dev
@@ -100,7 +77,7 @@ RUN cd ${APPDIR} && \
 	git clone https://github.com/openucx/ucx.git && \
 	cd ucx && \
 	./autogen.sh && \
-	./contrib/configure-release --prefix=${APPDIR}\ucx && \
+	./contrib/configure-release --prefix=${APPDIR}/ucx && \
 	make -j$(nproc) && \
 	make install -j$(nproc)
 
