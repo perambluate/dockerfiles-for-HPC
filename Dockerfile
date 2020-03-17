@@ -1,11 +1,15 @@
-FROM ubuntu:18.04 
+FROM nvidia/cuda:10.0-devel-ubuntu18.04
 MAINTAINER perambluate 
 
 # arguments
 #ARG HOME=/home/t2
 ARG MPIDIR=/opt
 ARG APPDIR=/root
-ARG DEBIAN_FRONTEND=noninteractive
+ARG HOST_MPI_DIR=/storage/hpc/mpi
+ARG HOST_APP_DIR=/storage/hpc/benchmark
+ARG HOST_MODULEFILES_DIR=modulefiles
+ARG INTEL_SN
+ENV DEBIAN_FRONTEND=noninteractive
 
 # use bash as shell
 SHELL ["/bin/bash", "-c"]
@@ -24,78 +28,36 @@ RUN apt update -y && \
 	numactl libnuma-dev \
 	tcl-dev tk-dev mesa-common-dev libjpeg-dev libtogl-dev 
 	
-	#libxt-dev \
-    #libxaw7-dev \ 
-    #libncurses5-dev
-	#tmux
+	# libxt-dev \
+    # libxaw7-dev \ 
+    # libncurses5-dev
+	# tmux
 
-#openmpi	
-#WORKDIR ${HOME}
-#COPY openmpi-3.1.4 ${APPDIR}/openmpi
+# intel
+COPY ${HOST_MPI_DIR} ${MPIDIR}
+RUN cd ${MPIDIR} && \
+	tar zxvf parallel_studio_xe_2020_cluster_edition.tgz && \
+	rm parallel_studio_xe_2020_cluster_edition.tgz && \
+	cd parallel_studio_xe_2020_cluster_edition && \
+	sed -ine 's/ACCEPT_EULA=decline/ACCEPT_EULA=accept/' silent.cfg && \
+	sed -ine 's/ARCH_SELECTED=ALL/ARCH_SELECTED=INTEL64/' silent.cfg && \
+	sed -inre "s/#ACTIVATION_SERIAL_NUMBER=snpat/ACTIVATION_SERIAL_NUMBER=${INTEL_SN}/" silent.cfg && \
+	sed -ine 's/ACTIVATION_TYPE=exist_lic/ACTIVATION_TYPE=serial_number/' silent.cfg && \
+	./install.sh --silent silent.cfg
 
+# openmpi-with-cuda
 RUN	cd ${MPIDIR} && \
-	wget https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.4.tar.gz && \
-	tar -zxvf openmpi-3.1.4.tar.gz && \
-	rm openmpi-3.1.4.tar.gz && \
-	cd openmpi-3.1.4 && \
-	./configure --prefix=${MPIDIR}/openmpi && \
+	# wget https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.5.tar.gz && \
+	tar -zxvf openmpi-3.1.5.tar.gz && \
+	rm openmpi-3.1.5.tar.gz && \
+	cd openmpi-3.1.5 && \
+	mkdir ${MPIDIR}/openmpi && \
+	./configure --with-cuda --prefix=${MPIDIR}/openmpi/ompi_3.1.5 && \
 	make -j$(nproc) && \
 	make install -j$(nproc) 
 
-#intel mpi
-#WORKDIR /opt
-#COPY intel ${APPDIR}/intel
-RUN cd ${MPIDIR} && \
-	wget http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16225/parallel_studio_xe_2020_cluster_edition.tgz && \
-	tar zxvf parallel_studio_xe_2020_cluster_edition.tgz && \
-	rm parallel_studio_xe_2020_cluster_edition.tgz
-
-# hpl-2.3
-RUN cd ${APPDIR} && \
-	wget https://www.netlib.org/benchmark/hpl/hpl-2.3.tar.gz && \
-	tar -zxvf hpl-2.3.tar.gz && \
-	rm hpl-2.3.tar.gz
-
-# hpcg-3.1
-RUN cd ${APPDIR} && \
-	wget http://www.hpcg-benchmark.org/downloads/hpcg-3.1.tar.gz && \
-	tar -zxvf hpcg-3.1.tar.gz && \
-	rm hpcg-3.1.tar.gz
-
-# hpcc-1.5.0
-RUN cd ${APPDIR} && \
-	wget http://icl.cs.utk.edu/projectsfiles/hpcc/download/hpcc-1.5.0.tar.gz && \
-	tar -zxvf hpcc-1.5.0.tar.gz && \
-	rm hpcc-1.5.0.tar.gz
-
-# elmer/ice
-RUN cd ${APPDIR} && \
-	git clone https://github.com/ElmerCSC/elmerfem.git
-
-# ucx for changa
-RUN cd ${APPDIR} && \
-	git clone https://github.com/openucx/ucx.git && \
-	cd ucx && \
-	./autogen.sh && \
-	./contrib/configure-release --prefix=${APPDIR}/ucx && \
-	make -j$(nproc) && \
-	make install -j$(nproc)
-
-# changa
-RUN cd ${APPDIR} && \
-	git clone https://github.com/UIUC-PPL/charm.git && \
-	git clone https://github.com/N-BodyShop/changa.git && \
-	git clone https://charm.cs.illinois.edu/gerrit/cosmo/utility.git
-
-# tipsy for changa
-#RUN cd ${APPDIR} && \
-#	git clone https://github.com/N-BodyShop/tipsy.git && \
-#	cd tipsy/code && \
-#	./configure && \
-#	make -j$(nproc) && \
-#	make install -j$(nproc)
-
-# module file
-COPY ./modulefiles ${APPDIR}/modulefiles
+# module file and root ssh permition
+COPY ${HOST_MODULEFILES_DIR} ${APPDIR}/modulefiles
 RUN source /etc/profile.d/modules.sh && \
-	module use ${APPDIR}/modulefiles
+	module use ${APPDIR}/modulefiles && \
+	sed-i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
