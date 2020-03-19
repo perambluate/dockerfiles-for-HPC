@@ -5,10 +5,10 @@ MAINTAINER perambluate
 #ARG HOME=/home/t2
 ARG MPIDIR=/opt
 ARG APPDIR=/root
-ARG HOST_MPI_DIR=/storage/hpc/mpi
-ARG HOST_APP_DIR=/storage/hpc/benchmark
+ARG HOST_MPI_DIR=mpi
+ARG HOST_APP_DIR=benchmark
 ARG INTEL_SN=intel_sn
-ARG HOST_MODULEFILES_DIR=modulefiles
+ARG HOST_MODULEFILES_DIR=dockerfile-mpi/modulefiles
 ENV DEBIAN_FRONTEND=noninteractive
 
 # use bash as shell
@@ -28,27 +28,23 @@ RUN apt update -y && \
 	numactl libnuma-dev \
 	tcl-dev tk-dev mesa-common-dev libjpeg-dev libtogl-dev 
 	
-	# libxt-dev \
-    # libxaw7-dev \ 
-    # libncurses5-dev
-	# tmux
-
 # intel
-COPY ${HOST_MPI_DIR} ${MPIDIR}
-COPY ${INTEL_SN} $(MPIDIR)
+COPY ${INTEL_SN} ${MPIDIR}
+COPY ${HOST_MPI_DIR}/parallel_studio_xe_2020_cluster_edition.tgz ${MPIDIR}
 RUN cd ${MPIDIR} && \
 	tar zxvf parallel_studio_xe_2020_cluster_edition.tgz && \
 	rm parallel_studio_xe_2020_cluster_edition.tgz && \
 	cd parallel_studio_xe_2020_cluster_edition && \
 	sed -ine 's/ACCEPT_EULA=decline/ACCEPT_EULA=accept/' silent.cfg && \
 	sed -ine 's/ARCH_SELECTED=ALL/ARCH_SELECTED=INTEL64/' silent.cfg && \
-	sed -inre "s/\#ACTIVATION_SERIAL_NUMBER=snpat/ACTIVATION_SERIAL_NUMBER=$(cat ../${INTEL_SN})/" silent.cfg && \
+	sed -inre "s/\#ACTIVATION_SERIAL_NUMBER=snpat/ACTIVATION_SERIAL_NUMBER=$(cat ${MPIDIR}/${INTEL_SN})/" silent.cfg && \
 	sed -ine 's/ACTIVATION_TYPE=exist_lic/ACTIVATION_TYPE=serial_number/' silent.cfg && \
 	./install.sh --silent silent.cfg && \
 	rm ${MPIDIR}/${INTEL_SN}
 
 # openmpi-with-cuda
-RUN	cd ${MPIDIR} && \
+COPY ${HOST_MPI_DIR}/openmpi-3.1.5.tar.gz ${MPIDIR}
+RUN cd ${MPIDIR} && \
 	tar -zxvf openmpi-3.1.5.tar.gz && \
 	rm openmpi-3.1.5.tar.gz && \
 	cd openmpi-3.1.5 && \
@@ -61,4 +57,4 @@ RUN	cd ${MPIDIR} && \
 COPY ${HOST_MODULEFILES_DIR} ${APPDIR}/modulefiles
 RUN source /etc/profile.d/modules.sh && \
 	module use ${APPDIR}/modulefiles && \
-	sed-i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+	sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
