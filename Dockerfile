@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.0-devel-ubuntu18.04
+FROM nvidia/cuda:10.0-devel-ubuntu16.04
 MAINTAINER perambluate 
 
 # arguments
@@ -56,5 +56,5 @@ RUN cd ${MPIDIR} && \
 # module file and root ssh permition
 COPY ${HOST_MODULEFILES_DIR} ${APPDIR}/modulefiles
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-CMD source /etc/profile.d/modules.sh && \
-	module use ${APPDIR}/modulefiles
+# CMD source /etc/profile.d/modules.sh && \
+# 	module use ${APPDIR}/modulefiles
