@@ -55,6 +55,6 @@ RUN cd ${MPIDIR} && \
 
 # module file and root ssh permition
 COPY ${HOST_MODULEFILES_DIR} ${APPDIR}/modulefiles
-RUN source /etc/profile.d/modules.sh && \
-	module use ${APPDIR}/modulefiles && \
-	sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+CMD source /etc/profile.d/modules.sh && \
+	module use ${APPDIR}/modulefiles
