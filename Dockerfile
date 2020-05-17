@@ -8,7 +8,7 @@ ARG APPDIR=/root
 ARG HOST_MPI_DIR=mpi
 ARG HOST_APP_DIR=benchmark
 ARG INTEL_SN=intel_sn
-ARG HOST_MODULEFILES_DIR=dockerfile-mpi/modulefiles
+ARG HOST_MODULEFILES_DIR=modulefiles
 ENV DEBIAN_FRONTEND=noninteractive
 
 # use bash as shell
@@ -22,7 +22,7 @@ RUN apt update -y && \
 	net-tools iputils-ping iproute2 curl \
 	environment-modules \
 	libnss3 libgtk2.*common libpango-1* libasound2* xserver-xorg cpio \
-	libgtk-3-dev libssl-dev linux-headers-$(uname -r) \
+	libgtk-3-dev libssl-dev linux-headers-4.15.0-99-generic \
 	autoconf automake \
 	libibverbs-dev libatlas3-base \
 	numactl libnuma-dev \
