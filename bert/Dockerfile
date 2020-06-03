@@ -14,9 +14,9 @@ ENV WORKDIR=/workspace \
     MODEL=$WORKDIR/model \
     DOWNLOAD=$WORKDIR/download \
     SCRIPTS=$WORKDIR/scripts \
+    MODULEFILES=$WORKDIR/modulefiles \
     MPIDIR=/opt/mpi
 
-COPY $HOST_DOWNLOAD_LIST $SCRIPTS
 RUN mkdir -p $WORKDIR && \
     mkdir -p $DATA $CODE $MODEL $DOWNLOAD && \
     apt update && apt install -y wget git unzip python3-pip
@@ -30,4 +30,6 @@ RUN wget -P $DOWNLOAD -i $DOWNLOAD/download_list &&\
     git clone https://github.com/NVIDIA/DeepLearningExamples.git $CODE/nvidia
 
 COPY $HOST_SCRIPTS $SCRIPTS
-RUN $SCRIPTS/openmpi_install.sh $OMPI_VER $MPIDIR
+RUN mkdir -p $MPIDIR && $SCRIPTS/openmpi_install.sh $OMPI_VER $MPIDIR
+
+COPY $HOST_MODULEFILES_DIR $MODULEFILES
