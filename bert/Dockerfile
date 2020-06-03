@@ -16,7 +16,7 @@ ENV WORKDIR=/workspace \
     SCRIPTS=$WORKDIR/scripts \
     MPIDIR=/opt/mpi
 
-COPY $HOST_DOWNLOAD_LIST 
+COPY $HOST_DOWNLOAD_LIST $SCRIPTS
 RUN mkdir -p $WORKDIR && \
     mkdir -p $DATA $CODE $MODEL $DOWNLOAD && \
     apt update && apt install -y wget git unzip python3-pip
