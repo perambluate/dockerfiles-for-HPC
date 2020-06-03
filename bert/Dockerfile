@@ -23,7 +23,8 @@ RUN mkdir -p $WORKDIR && \
 
 COPY $HOST_DOWNLOAD_LIST $WORKDIR
 # download bert pretrained model & dataset
-RUN wget -P $DOWNLOAD -i $DOWNLOAD/download_list &&\
+WORKDIR $WORKDIR
+RUN wget -P $DOWNLOAD -i downloadlist &&\
     python3 $DOWNLOAD/download_glue_data.py --tasks all --data_dir $DATA/glue_data &&\
     unzip "$DOWNLOAD/*.zip" -d $MODEL &&\
     git clone https://github.com/google-research/bert.git $CODE/google &&\
@@ -31,5 +32,4 @@ RUN wget -P $DOWNLOAD -i $DOWNLOAD/download_list &&\
 
 COPY $HOST_SCRIPTS $SCRIPTS
 RUN mkdir -p $MPIDIR && $SCRIPTS/openmpi_install.sh $OMPI_VER $MPIDIR
-
 COPY $HOST_MODULEFILES_DIR $MODULEFILES

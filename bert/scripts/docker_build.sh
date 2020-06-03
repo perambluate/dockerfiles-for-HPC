@@ -12,4 +12,4 @@ if [ $# != 0 ]; then
 fi
 
 docker pull $BASE
-docker build -f $DKF --rm -t $CTN --build-arg BASE=$BASE .
+docker build --file bert/$DKF --rm -t $CTN --build-arg BASE=$BASE .
