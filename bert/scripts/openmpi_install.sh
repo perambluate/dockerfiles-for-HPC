@@ -5,10 +5,10 @@ DOWNLOAD=/tmp
 URL=https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-${VER}.tar.gz
 
 if [ $# != 0 ];then
-    if [[ $1 != ^(3,4)\.* ]]; then
+    if [[ $1 =~ [^[34]\.[0-9]\.[0-9] ]]; then
         echo "Unsurported version of Open MPI!!!"
         exit 1;
-    elif [[ $1 != ^3\.* ]]; then
+    elif [[ $1 =~ ^3\.* ]]; then
         VER=$1
         URL=https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-${VER}.tar.gz
     else

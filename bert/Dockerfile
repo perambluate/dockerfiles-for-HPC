@@ -19,7 +19,7 @@ ENV WORKDIR=/workspace \
 
 RUN mkdir -p $WORKDIR && \
     mkdir -p $DATA $CODE $MODEL $DOWNLOAD && \
-    apt update && apt install -y wget git unzip python3-pip
+    apt update && apt install -y gfortran wget git unzip python3-pip
 
 COPY $HOST_DOWNLOAD_LIST $WORKDIR
 # download bert pretrained model & dataset
@@ -31,5 +31,5 @@ RUN wget -P $DOWNLOAD -i downloadlist &&\
     git clone https://github.com/NVIDIA/DeepLearningExamples.git $CODE/nvidia
 
 COPY $HOST_SCRIPTS $SCRIPTS
-RUN mkdir -p $MPIDIR && $SCRIPTS/openmpi_install.sh $OMPI_VER $MPIDIR
+RUN mkdir -p $MPIDIR && source $SCRIPTS/openmpi_install.sh $OMPI_VER $MPIDIR
 COPY $HOST_MODULEFILES_DIR $MODULEFILES
