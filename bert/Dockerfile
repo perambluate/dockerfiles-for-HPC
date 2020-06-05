@@ -8,8 +8,8 @@ ARG HOST_SCRIPTS=bert/scripts
 ARG HOST_DOWNLOAD_LIST=bert/downloadlist
 ARG OMPI_VER=3.1.5
 ENV DEBIAN_FRONTEND=noninteractive LANG=C LC_ALL=C
-ENV WORKDIR=/workspace \
-    DATA=$WORKDIR/data \
+ENV WORKDIR=/workspace
+ENV DATA=$WORKDIR/data \
     CODE=$WORKDIR/github \
     MODEL=$WORKDIR/model \
     DOWNLOAD=$WORKDIR/download \
@@ -19,7 +19,9 @@ ENV WORKDIR=/workspace \
 
 RUN mkdir -p $WORKDIR && \
     mkdir -p $DATA $CODE $MODEL $DOWNLOAD && \
-    apt update && apt install -y gfortran wget git unzip python3-pip
+    apt update && \
+    apt install -y gfortran wget git unzip python3-pip \
+	tcl environment-modules
 
 COPY $HOST_DOWNLOAD_LIST $WORKDIR
 # download bert pretrained model & dataset
