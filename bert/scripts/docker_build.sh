@@ -1,15 +1,24 @@
 #!/bin/bash
 
-DKF=Dockerfile
-CTN=bert
-BASE="nvcr.io/nvidia/tensorflow:20.03-tf1-py3"
+fn=Dockerfile
+tag=bert-test
+base="nvcr.io/nvidia/tensorflow:20.03-tf1-py3"
 
-if [ $# != 0 ]; then
-    echo "Please input BASE DKF CTN in order"
-    DKF=$1
-    CTN=${2:-$CTN}
-    BASE=${3:-$BASE}
-fi
+ while [[ -n $@ ]]; do
+        temp=$1
+        case ${temp%%=*} in
+            "fn")
+                fn=${temp#fn=};;
+            "tag")
+                tag=${temp#tag=};;
+            "base")
+                base=${temp#base=};;
+            *)
+                echo "Wrong input, please check this shell script"
+                return 1;;
+        esac
+        shift
+    done
 
-docker pull $BASE
-docker build --file bert/$DKF --rm -t $CTN --build-arg BASE=$BASE .
+docker pull $base
+docker build --file bert/$fn --rm -t $tag --build-arg BASE=$base .
