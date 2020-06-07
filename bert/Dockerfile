@@ -27,7 +27,7 @@ COPY $HOST_DOWNLOAD_LIST $WORKDIR
 # download bert pretrained model & dataset
 WORKDIR $WORKDIR
 RUN wget -P $DOWNLOAD -i downloadlist &&\
-    python3 $DOWNLOAD/download_glue_data.py --tasks all --data_dir $DATA/glue_data &&\
+    python3 $DOWNLOAD/download_glue_data.py --tasks MNLI --data_dir $DATA/glue_data &&\
     unzip "$DOWNLOAD/*.zip" -d $MODEL &&\
     git clone https://github.com/google-research/bert.git $CODE/google &&\
     git clone https://github.com/NVIDIA/DeepLearningExamples.git $CODE/nvidia

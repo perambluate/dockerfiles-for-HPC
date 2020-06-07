@@ -2,3 +2,4 @@ intel_sn
 benchmark/*
 mpi/*
 *.log
+containers/*
