@@ -1,18 +1,18 @@
 #!/bin/bash
 VER=3.1.5
-MPIDIR=/opt/mpi
+MPIDIR=/opt
 DOWNLOAD=/tmp
-URL=https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-${VER}.tar.gz
+URL=
 
 if [ $# != 0 ];then
-    if [[ $1 =~ [^[34]\.[0-9]\.[0-9] ]]; then
-        echo "Unsurported version of Open MPI!!!"
-        exit 1;
-    elif [[ $1 =~ ^3\.* ]]; then
+    if [[ $1 =~ ^3\.1\.* ]]; then
         VER=$1
         URL=https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-${VER}.tar.gz
-    else
+    elif [[ $1 =~ ^4\.0\.* ]]; then
         URL=https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-${VER}.tar.gz
+    else
+        echo "Unsurported version of Open MPI!!!"
+        exit 1;
     fi
     if [[ -n $2 ]]; then
         $MPIDIR=$2
