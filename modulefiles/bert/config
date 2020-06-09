@@ -1,9 +1,13 @@
 #%Module1.0
 
-set    WORKSPACE    /workspace
-setenv    RESULT_PATH    $WORKSPACE/results
-setenv    MNLI_PATH    $WORKSPACE/data/glue_data/MNLI
-setenv    BASE_MODEL    $WORKSPACE/model/multi_cased_L-12_H-768_A-12
-setenv    LARGE_MODEL    $WORKSPACE/model/wwm_uncased_L-24_H-1024_A-16
-setenv    GOOGLE_BERT_CODE_PATH    $WORKSPACE/github/bert
-setenv    NVIDIA_BERT_CODE_PATH    $WORKSPACE/github/DeepLearningExamples/TensorFlow/LanguageModeling/BERT
+set    WSP      /workspace
+set    DATA     $WSP/data
+set    MODEL    $WSP/model
+set    CODE     $WSP/github
+setenv  MNLI          $DATA/MNLI
+setenv  WWM_UNCASED   $MODEL/wwm_uncased_L-24_H-1024_A-16
+setenv  WWM_CASED     $MODEL/wwm_cased_L-24_H-1024_A-16
+setenv  UNCASED       $MODEL/uncased_L-24_H-1024_A-16
+setenv  CASED         $MODEL/cased_L-24_H-1024_A-16
+setenv  GOOGLE        $WSP/github/google
+setenv  NVIDIA        $WSP/github/nvidia
