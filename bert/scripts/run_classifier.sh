@@ -1,10 +1,9 @@
 #!/bin/bash
 TASK=MNLI
 SOURCE=nvidia
-MODEL=uncased
-MPI=open
+MODEL=wwm_uncased
+MPI=ompi
 NP=1
-LOG=${TASK}_${SOURCE}_${MODEL}_${MPI}
 ERR=0
 
 ReadInput(){
@@ -48,7 +47,7 @@ ModuleLoad(){
 SetMPIExec(){
 	if (( NP > 1 )); then
 		[[ ${MPI} == 'open' ]] && ROOT_ALLOW='--allow-run-as-root' || ROOT_ALLOW=
-		MPIEXEC='mpirun'${ROOT_ALLOW}'-np '${NP}' '${MPI_ARG}
+		MPIEXEC='mpirun '${ROOT_ALLOW}' -np '${NP}' '${MPI_ARG}
 	else
 		MPIEXEC=
 	fi
@@ -66,7 +65,8 @@ ErrHandle(){
 ReadInput $@
 ModuleLoad
 SetMPIExec
-OUTDIR=results/${LOG}
+LOG="${TASK}_${SOURCE}_${MODEL}_${MPI}"
+OUTDIR="results/${LOG}"
 [ -d ${OUTDIR} ] || mkdir -p ${OUTDIR}
 
 time -p \
