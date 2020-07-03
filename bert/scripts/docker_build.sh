@@ -27,5 +27,13 @@ while [[ -n $@ ]]; do
     shift
 done
 
-docker pull $bert && docker pull $ompi && \
+DockerIMG(){
+    while [[ -n $@ ]]; do
+	temp=$1
+        [[ -n `docker images -q $temp 2> /dev/null` ]] || docker pull $temp
+   	shift
+    done
+}
+
+DockerIMG $bert $ompi
 docker build --file $df --rm -t $tag --build-arg BERT_BASE=$bert --build-arg OMPI_BASE=$ompi .

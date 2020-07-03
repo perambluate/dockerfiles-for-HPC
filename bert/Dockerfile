@@ -50,9 +50,10 @@ WORKDIR ${WORKDIR}
 RUN wget -P ${TMP} -i downloadlist &&\
     python3 ${TMP}/download_glue_data.py --tasks MNLI --data_dir ${DATA} &&\
     unzip "${TMP}/*.zip" -d $MODELS &&\
-    git clone https://github.com/google-research/bert.git ${CODES}/google &&\
+    cd ${CODES} &&\
+    git clone https://github.com/google-research/bert.git google &&\
     git clone https://github.com/NVIDIA/DeepLearningExamples.git &&\
-    ln -s ${CODES}/DeepLearningExamples/TensorFlow/LanguageModeling/BERT nvidia-bert 
+    ln -s ${CODES}/DeepLearningExamples/TensorFlow/LanguageModeling/BERT nvidia
 
 #install NCCL
 # COPY ${HOST_SCRIPTS}/${NCCL_INSTALL_SCRIPT} .
