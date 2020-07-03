@@ -28,8 +28,9 @@ ReadInput(){
 				echo "code=<using_nvidia_or_google_github> \
 					model=<the_pretrained_model_for_fine_tuning> \
 					mpi=<the_version_of_mpi_to_run> \
+					np=<number_of_processes_to_run>
 					mpi_arg=<the_arguments_for_mpirun>"
-	            exit 1;;
+	            # exit 1;;
     	esac
 	    shift
 	done
@@ -58,7 +59,7 @@ ErrHandle(){
 	BLOCK=$2
 	if [[ $1 != 0 ]]; then
         printf "Some errors occurred in %s, please fix it and modify the script!!\n" ${BLOCK}
-        exit 1;
+        # exit 1;
     fi
 }
 
@@ -67,6 +68,7 @@ ModuleLoad
 SetMPIExec
 OUTDIR=results/${LOG}
 [ -d ${OUTDIR} ] || mkdir -p ${OUTDIR}
+
 time -p \
 ${MPIEXEC} \
 python ${CODE_PATH}/run_classifier.py \
